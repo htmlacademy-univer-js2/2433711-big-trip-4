@@ -1,12 +1,12 @@
-const path = require("path");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: "./src/main.js",
+  entry: './src/main.js',
   output: {
-    filename: "bundle.[contenthash].js",
-    path: path.resolve(__dirname, "build"),
+    filename: 'bundle.[contenthash].js',
+    path: path.resolve(__dirname, 'build'),
     clean: true,
   },
   module: {
@@ -15,24 +15,21 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env"],
+            presets: ['@babel/preset-env'],
           },
         },
       },
     ],
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: "public", to: "build" }],
-      globOptions: {
-        ignore: ["**/index.html"],
-      },
+      patterns: [{ from: 'public', to: 'build' }],
     }),
     new HtmlWebpackPlugin({
-      template: "./public/index.html",
+      template: './public/index.html',
     }),
   ],
 };
