@@ -61,7 +61,9 @@ export const createPointEditTemplate = ({
 }) => {
   const { basePrice, type, destination } = point;
   const now = dayjs();
-  const des = pointDestination.find((dest) => destination === dest.id);
+  const des = pointDestination.destinations.find(
+    (dest) => destination === dest.id
+  );
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -75,14 +77,14 @@ export const createPointEditTemplate = ({
       ${createDestinationList(type)}
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${now.format(
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${now.format(
           'DD/MM/YY HH:mm'
-        )}>
+        )}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${now
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${now
           .add(12, 'hour')
-          .format('DD/MM/YY HH:mm')}>
+          .format('DD/MM/YY HH:mm')}">
       </div>
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
