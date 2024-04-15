@@ -1,6 +1,6 @@
 import { generatePoint } from '../mock/points.js';
 
-const POINTS_COUNT = 5;
+const POINTS_COUNT = 0;
 
 export default class PointModel {
   #points;

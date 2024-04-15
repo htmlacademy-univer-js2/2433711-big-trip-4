@@ -65,7 +65,8 @@ export const DATES = [
     to: new Date(2022, 3, 10, 18, 12),
   },
   {
-    from: new Date(2022, 4, 9, 15, 17),
-    to: new Date(2022, 4, 9, 16, 17),
+    from: new Date(2024, 4, 9, 15, 17),
+    to: new Date(2024, 4, 25, 16, 17),
   },
 ];
+export const FILTERS = ['Everything', 'Future', 'Present', 'Past'];
