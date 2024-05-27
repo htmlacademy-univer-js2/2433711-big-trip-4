@@ -12,6 +12,12 @@ export default class OfferModel {
   }
 
   getOffersById(id) {
-    return this.#offers.find((offer) => offer.id === id);
+    return this.#offers.filter((offer) => offer.id === id);
+  }
+
+  getOffersByTypeAndId(type, ids) {
+    const typeOffers = this.#offers.find((offer) => offer.type === type).offers;
+    const result = typeOffers.filter((offer) => ids.includes(offer.id));
+    return result;
   }
 }

@@ -17,15 +17,15 @@ const createEventList = () =>
             ${createEventItems()}
           </fieldset>
         </div>`;
-const createDestinationList = (type) =>
+const createDestinationList = (type, destination) =>
   `<div class="event__field-group  event__field-group--destination">
   <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
   </label>
-  <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
+  <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
   <datalist id="destination-list-1">
         ${CITIES.map((city) => `<option value="${city}"></option>`).join('')}
-    </datalist>
+  </datalist>
   </div>`;
 
 const createOfferItem = (offer) => `<div class="event__offer-selector">
@@ -59,11 +59,7 @@ export const createPointEditTemplate = ({
   pointDestination,
   pointOffers,
 }) => {
-  const { basePrice, type, destination } = point;
-  const now = dayjs();
-  const des = pointDestination.destinations.find(
-    (dest) => destination === dest.id
-  );
+  const { basePrice, type, dateFrom, dateTo } = point;
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -74,17 +70,17 @@ export const createPointEditTemplate = ({
         </label>
       ${createEventList()}
       </div>
-      ${createDestinationList(type)}
+      ${createDestinationList(type, pointDestination.name)}
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${now.format(
-          'DD/MM/YY HH:mm'
-        )}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(
+          dateFrom
+        ).format('DD/MM/YY HH:mm')}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${now
-          .add(12, 'hour')
-          .format('DD/MM/YY HH:mm')}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(
+          dateTo
+        ).format('DD/MM/YY HH:mm')}">
       </div>
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
@@ -106,10 +102,12 @@ export const createPointEditTemplate = ({
       </section>
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">${
-          des.name
+          pointDestination.name
         }</h3>
-        <p class="event__destination-description">${des.description}</p>
-        ${createPicturesSection(des.pictures)}
+        <p class="event__destination-description">${
+          pointDestination.description
+        }</p>
+        ${createPicturesSection(pointDestination.pictures)}
       </section>
     </section>
   </form>
