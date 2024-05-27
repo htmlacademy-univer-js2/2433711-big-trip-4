@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 import dayjs from 'dayjs';
 import { TYPES } from '../const';
+
 const createEventItems = () =>
   TYPES.map(
     (type) => `<div class="event__type-item">

@@ -21,16 +21,21 @@ export const createPointTemplate = ({
   pointDestination,
   pointOffers,
 }) => {
-  const { basePrice, dateFrom, dateTo, isFavorite, type, destination } = point;
-  const offerOfThisType = pointOffers.find(
+  const { basePrice, dateFrom, dateTo, isFavorite, type, destination, offers } =
+    point;
+  const offersOfThisType = pointOffers.find(
     (offer) => offer.type === type
   ).offers;
+  const selectedOffers = offers.flatMap((currentOffer) =>
+    offersOfThisType.filter((typedOffer) => currentOffer === typedOffer.id)
+  );
+  console.log(selectedOffers);
   const pointDest = pointDestination.find((d) => destination === d.id);
   const timeBetween = getDuration(dateFrom, dateTo);
   return `<li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime=${dateFrom}>${dayjs(dateFrom).format(
-    'DD MMM'
+    'MMM DD'
   )}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
@@ -53,7 +58,7 @@ export const createPointTemplate = ({
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createOffersList(offerOfThisType)}
+        ${createOffersList(selectedOffers)}
       </ul>
       <button class="event__favorite-btn ${
         isFavorite ? 'event__favorite-btn--active' : ''
