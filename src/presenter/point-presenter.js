@@ -49,9 +49,7 @@ export default class PointPresenter {
       point: this.#point,
       pointDestination: this.#destinationsModel.destinations,
       pointOffers: this.#offersModel.offers,
-      onFormSubmit: () => {
-        this.#replaceFormToPoint();
-      },
+      onFormSubmit: this.#formSubmitHandler,
       OnCancelClick: () => {
         this.#replaceFormToPoint();
       },
@@ -99,13 +97,9 @@ export default class PointPresenter {
     });
   };
 
-  #onEditTypePoint = (typePoint) => {
-    const newOffers = this.#offersModel.getOffersByType(typePoint);
-    this.#handleDataChange({
-      ...this.#point,
-      type: typePoint,
-      offers: newOffers,
-    });
+  #formSubmitHandler = (point) => {
+    this.#handleDataChange(point);
+    this.#replaceFormToPoint();
   };
 
   #replacePointToForm() {
