@@ -74,3 +74,8 @@ export const DATES = [
   },
 ];
 export const FILTERS = ['Everything', 'Future', 'Present', 'Past'];
+export const SortType = {
+  DEFAULT: 'default',
+  PRICE_SORT: 'price-sort',
+  DURATION_SORT: 'duration-sort',
+};
