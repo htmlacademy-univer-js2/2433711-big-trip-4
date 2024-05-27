@@ -37,13 +37,8 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
     this.#pointComponent = new PointView({
       point: this.#point,
-      pointDestination: this.#destinationsModel.getDestinationById(
-        this.#point.destination
-      ),
-      pointOffers: this.#offersModel.getOffersByTypeAndId(
-        this.#point.type,
-        this.#point.offers
-      ),
+      pointDestination: this.#destinationsModel.destinations,
+      pointOffers: this.#offersModel.offers,
       onEditClick: () => {
         document.addEventListener('keydown', this.#escKeyDownHandler);
         this.#replacePointToForm();
@@ -52,19 +47,12 @@ export default class PointPresenter {
     });
     this.#pointEditComponent = new PointEditView({
       point: this.#point,
-      pointDestination: this.#destinationsModel.getDestinationById(
-        this.#point.destination
-      ),
-      pointOffers: this.#offersModel.getOffersByTypeAndId(
-        this.#point.type,
-        this.#point.offers
-      ),
+      pointDestination: this.#destinationsModel.destinations,
+      pointOffers: this.#offersModel.offers,
       onFormSubmit: () => {
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
         this.#replaceFormToPoint();
       },
       OnCancelClick: () => {
-        document.removeEventListener('keydown', this.#escKeyDownHandler);
         this.#replaceFormToPoint();
       },
     });
@@ -92,13 +80,14 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   };
@@ -110,6 +99,15 @@ export default class PointPresenter {
     });
   };
 
+  #onEditTypePoint = (typePoint) => {
+    const newOffers = this.#offersModel.getOffersByType(typePoint);
+    this.#handleDataChange({
+      ...this.#point,
+      type: typePoint,
+      offers: newOffers,
+    });
+  };
+
   #replacePointToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
     this.#handleModeChange();
@@ -117,6 +115,7 @@ export default class PointPresenter {
   }
 
   #replaceFormToPoint() {
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     replace(this.#pointComponent, this.#pointEditComponent);
     this.#mode = Mode.DEFAULT;
   }
