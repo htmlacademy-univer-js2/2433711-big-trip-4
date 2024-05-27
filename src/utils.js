@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-
+import { FilterType } from './const';
 export const getRandomArrayElement = (items) =>
   items[Math.floor(Math.random() * items.length)];
 
@@ -42,11 +42,31 @@ export function sortPointsByPrice(pointA, pointB) {
   }
   return 0;
 }
+export const isDatesEqual = (dateA, dateB) => dayjs(dateA).isSame(dateB);
+export const isDurationEqual = (pointA, pointB) => {
+  const pointAMinutes = dayjs(pointA.dateTo).diff(
+    dayjs(pointA.dateFrom),
+    'minute'
+  );
+  const pointBMinutes = dayjs(pointB.dateTo).diff(
+    dayjs(pointB.dateFrom),
+    'minute'
+  );
+  return pointAMinutes === pointBMinutes;
+};
 
-export const updateItem = (items, update) =>
-  items.map((item) => (item.id === update.id ? update : item));
-
+export const isPriceEqual = (priceA, priceB) => priceA === priceB;
 export const isEventPresent = (dateFrom, dateTo) =>
   dayjs().diff(dateFrom) > 0 && dayjs().diff(dateTo) < 0;
 export const isEventPast = (dateTo) => dayjs().diff(dateTo) > 0;
 export const isEventFuture = (dateFrom) => dayjs().diff(dateFrom) < 0;
+
+export const filter = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) =>
+    points.filter((point) => isEventFuture(point.dateFrom)),
+  [FilterType.PAST]: (points) =>
+    points.filter((point) => isEventPast(point.dateTo)),
+  [FilterType.PRESENT]: (points) =>
+    points.filter((point) => isEventPresent(point.dateFrom, point.dateTo)),
+};

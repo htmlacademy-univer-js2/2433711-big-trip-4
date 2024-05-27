@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { EMPTY_POINT } from '../const';
 import { createPointEditTemplate } from '../template/point-edit-template.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
@@ -9,6 +10,7 @@ export default class PointEditView extends AbstractStatefulView {
   #pointOffers;
   #handleFormSubmit = null;
   #handleCancelClick;
+  #handleDeleteClick;
   #datepickerFrom = null;
   #datepickerTo = null;
   constructor({
@@ -17,11 +19,13 @@ export default class PointEditView extends AbstractStatefulView {
     pointOffers,
     onFormSubmit,
     OnCancelClick,
+    onDeleteClick,
   }) {
     super();
 
     this.#pointDestinations = pointDestination;
     this.#pointOffers = pointOffers;
+    this.#handleDeleteClick = onDeleteClick;
     this.#handleFormSubmit = onFormSubmit;
     this._setState(
       PointEditView.parsePointToState(point, pointDestination, pointOffers)
@@ -56,15 +60,12 @@ export default class PointEditView extends AbstractStatefulView {
     this.updateElement({
       dateFrom: userDate,
     });
-
-    //this.#datepickerTo.setMinDate(this._state.dateFrom);
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this.updateElement({
       dateTo: userDate,
     });
-    //this.#datepickerFrom.setMaxDate(this._state.dateTo);
   };
 
   #pointTypeChangeHandler = (evt) => {
@@ -99,6 +100,11 @@ export default class PointEditView extends AbstractStatefulView {
     this.#handleCancelClick();
   };
 
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(PointEditView.parseStateToPoint(this._state));
+  };
+
   #destinationChangeHandler = (evt) => {
     this.updateElement({
       destination: this.#pointDestinations.find(
@@ -130,6 +136,9 @@ export default class PointEditView extends AbstractStatefulView {
     this.element
       .querySelector('.event__available-offers')
       ?.addEventListener('change', this.#offersChangeHandler);
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
     this.#setDatePickers();
   }
 
