@@ -10,17 +10,22 @@ import {
   isEventPresent,
   isEventFuture,
   updateItem,
+  sortPointsByDuration,
+  sortPointsByPrice,
 } from '../utils.js';
+import { SortType } from '../const.js';
 export default class BoardPresenter {
   #container = null;
   #pointsModel = null;
   #destinationsModel = null;
   #offersModel = null;
   #tripPoints = [];
-  #sortComponent = new SortView();
+  #sortComponent = null;
+  #currentSortType = SortType.DEFAULT;
   #eventListComponent = new EventListView();
   #filteredPoints = {};
   #pointPresenters = new Map();
+  #sourcedBoardPoints = null;
   constructor({ container, pointsModel, offersModel, destinationsModel }) {
     this.#container = container;
     this.#pointsModel = pointsModel;
@@ -30,11 +35,13 @@ export default class BoardPresenter {
 
   init() {
     this.#tripPoints = [...this.#pointsModel.points];
+    this.#sourcedBoardPoints = [...this.#pointsModel.points];
     this.#renderBoard();
   }
 
   #handlePointChange = (updatedPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#sourcedBoardPoints = updateItem(this.#tripPoints, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
@@ -42,7 +49,33 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
+  #sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.DURATION_SORT:
+        this.#tripPoints.sort(sortPointsByDuration);
+        break;
+      case SortType.PRICE_SORT:
+        this.#tripPoints.sort(sortPointsByPrice);
+        break;
+      default:
+        this.#tripPoints = [...this.#sourcedBoardPoints];
+    }
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (sortType === this.#currentSortType) {
+      return;
+    }
+    this.#sortPoints(sortType);
+    this.#clearPointList();
+    this.#renderPointList();
+  };
+
   #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange,
+    });
     render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
