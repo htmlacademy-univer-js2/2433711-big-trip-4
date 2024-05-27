@@ -15,7 +15,10 @@ export function getDuration(startTime, endTime) {
   const formatMinutes = minutes !== 0 ? `${minutes}M` : '';
   return formatDays + formatHours + formatMinutes;
 }
+
+export const updateItem = (items, update) =>
+  items.map((item) => (item.id === update.id ? update : item));
 export const isEventPresent = (dateFrom, dateTo) =>
-  dayjs().diff(dateFrom) < 0 && dayjs().diff(dateTo) > 0;
+  dayjs().diff(dateFrom) > 0 && dayjs().diff(dateTo) < 0;
 export const isEventPast = (dateTo) => dayjs().diff(dateTo) > 0;
 export const isEventFuture = (dateFrom) => dayjs().diff(dateFrom) < 0;
