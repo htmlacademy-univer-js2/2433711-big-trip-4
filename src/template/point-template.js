@@ -29,7 +29,6 @@ export const createPointTemplate = ({
   const selectedOffers = offers.flatMap((currentOffer) =>
     offersOfThisType.filter((typedOffer) => currentOffer === typedOffer.id)
   );
-  console.log(selectedOffers);
   const pointDest = pointDestination.find((d) => destination === d.id);
   const timeBetween = getDuration(dateFrom, dateTo);
   return `<li class="trip-events__item">
