@@ -2,7 +2,7 @@ import { OFFERS, PRICE, TYPES } from '../const.js';
 import { getRandomInt, getRandomArrayElement } from '../utils.js';
 
 const generateOffer = () => ({
-  id: getRandomInt(0, 1000),
+  id: crypto.randomUUID(),
   title: getRandomArrayElement(OFFERS),
   price: getRandomInt(PRICE.min, PRICE.max),
 });
