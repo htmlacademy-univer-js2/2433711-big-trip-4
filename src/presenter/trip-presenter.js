@@ -5,14 +5,13 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import {
-  isEventPast,
-  isEventPresent,
-  isEventFuture,
   sortPointsByDuration,
   sortPointsByPrice,
-  filter,
+  filterPoints,
+  sortPointByDay,
 } from '../utils.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
+import LoadingView from '../view/loading-view.js';
 export default class BoardPresenter {
   #container = null;
   #pointsModel = null;
@@ -21,12 +20,14 @@ export default class BoardPresenter {
   #sortComponent = null;
   #currentSortType = SortType.DEFAULT;
   #eventListComponent = new EventListView();
+  #loadingComponent = new LoadingView();
   #filteredPoints = {};
   #filterModel = null;
   #pointPresenters = new Map();
   #noPointComponent = null;
   #newPointPresenter = null;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
   constructor({
     container,
     pointsModel,
@@ -45,6 +46,8 @@ export default class BoardPresenter {
       taskListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewPointDestroy,
+      offersList: this.#offersModel.offers,
+      destinationsList: this.#destinationsModel.destinations,
     });
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -54,8 +57,10 @@ export default class BoardPresenter {
   get points() {
     this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
-    const filteredPoints = filter[this.#filterType](points);
+    const filteredPoints = filterPoints[this.#filterType](points);
     switch (this.#currentSortType) {
+      case SortType.DEFAULT:
+        return filteredPoints.sort(sortPointByDay);
       case SortType.DURATION_SORT:
         return filteredPoints.sort(sortPointsByDuration);
 
@@ -71,7 +76,7 @@ export default class BoardPresenter {
 
   createPoint() {
     this.#currentSortType = SortType.DEFAULT;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
   }
 
@@ -107,6 +112,11 @@ export default class BoardPresenter {
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -125,6 +135,10 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType,
     });
     render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 
   #renderNoPoints() {
@@ -163,6 +177,7 @@ export default class BoardPresenter {
 
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
+    remove(this.#loadingComponent);
     this.#newPointPresenter.destroy();
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
@@ -174,6 +189,11 @@ export default class BoardPresenter {
 
   #renderBoard() {
     render(this.#eventListComponent, this.#container);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     if (this.points.length === 0) {
       this.#renderNoPoints();
@@ -182,25 +202,5 @@ export default class BoardPresenter {
     this.#renderSort();
 
     this.#renderPointList(points);
-  }
-
-  #filterPoints(points) {
-    this.#filteredPoints.everything = points;
-    this.#filteredPoints.future = points.filter((point) =>
-      isEventFuture(point.dateTo)
-    );
-    this.#filteredPoints.present = points.filter((point) =>
-      isEventPresent(point.dateFrom, point.dateTo)
-    );
-    this.#filteredPoints.past = points.filter((point) =>
-      isEventPast(point.dateFrom)
-    );
-
-    return this.#filteredPoints;
-  }
-
-  #clearPointList() {
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
   }
 }

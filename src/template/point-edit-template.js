@@ -28,7 +28,7 @@ const createDestinationList = (type, destination, allDestinations) =>
         ${allDestinations
           .map(
             (city) =>
-              `<option value="${city.name}" data-id="${city.id}">${city.name}</option>`
+              `<option value="${city.name}" data-id="${city.id}"></option>`
           )
           .join('')}
   </datalist>
@@ -77,10 +77,13 @@ export const createPointEditTemplate = ({
   pointOffers,
 }) => {
   const { basePrice, type, dateFrom, dateTo, destination, offers } = point;
+
   const offersOfThisType = pointOffers.find(
     (offer) => offer.type === type
   ).offers;
+
   const pointDest = pointDestination.find((d) => destination === d.id);
+
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -91,24 +94,28 @@ export const createPointEditTemplate = ({
         </label>
       ${createEventList()}
       </div>
-      ${createDestinationList(type, pointDest.name, pointDestination)}
+      ${
+        pointDest
+          ? createDestinationList(type, pointDest.name, pointDestination)
+          : createDestinationList(type, '', pointDestination)
+      }
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(
-          dateFrom
-        ).format('DD/MM/YY HH:mm')}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${
+          dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''
+        }">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(
-          dateTo
-        ).format('DD/MM/YY HH:mm')}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${
+          dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''
+        }">
       </div>
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
       </div>
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
@@ -116,9 +123,7 @@ export const createPointEditTemplate = ({
         <span class="visually-hidden">Open event</span>
       </button>
     </header>
-    ${
-      pointDest
-        ? `<section class="event__details">
+    <section class="event__details">
     ${
       offersOfThisType.length && pointDest
         ? `<section class="event__section  event__section--offers">
@@ -129,18 +134,26 @@ export const createPointEditTemplate = ({
         </section>`
         : ''
     }
-
-    <section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">${
-        pointDest.name
-      }</h3>
-      <p class="event__destination-description">${pointDest.description}</p>
-      ${createPicturesSection(pointDest.pictures)}
-    </section>
+    ${
+      pointDest.description || pointDest.pictures.length !== 0
+        ? `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">${
+      pointDest.name
+    }</h3>
+    ${
+      pointDest.description
+        ? `<p class="event__destination-description">${pointDest.description}</p>`
+        : ''
+    }
+    ${
+      pointDest.pictures.length !== 0
+        ? createPicturesSection(pointDest.pictures)
+        : ''
+    }
   </section>`
         : ''
     }
-
+    </section>
   </form>
 </li>`;
 };

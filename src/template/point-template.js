@@ -23,6 +23,7 @@ export const createPointTemplate = ({
 }) => {
   const { basePrice, dateFrom, dateTo, isFavorite, type, destination, offers } =
     point;
+
   const offersOfThisType = pointOffers.find(
     (offer) => offer.type === type
   ).offers;

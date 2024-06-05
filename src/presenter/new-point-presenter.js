@@ -6,13 +6,22 @@ export default class NewPointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
-
+  #tripInfoContainer = null;
   #pointEditComponent = null;
-
-  constructor({ taskListContainer, onDataChange, onDestroy }) {
+  #offersList;
+  #destinationsList;
+  constructor({
+    taskListContainer,
+    onDataChange,
+    onDestroy,
+    offersList,
+    destinationsList,
+  }) {
     this.#pointListContainer = taskListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.#offersList = offersList;
+    this.#destinationsList = destinationsList;
   }
 
   init() {
@@ -21,8 +30,10 @@ export default class NewPointPresenter {
     }
 
     this.#pointEditComponent = new PointEditView({
+      pointOffers: this.#offersList,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
+      pointDestination: this.#destinationsList,
     });
 
     render(
@@ -48,13 +59,15 @@ export default class NewPointPresenter {
   }
 
   #handleFormSubmit = (point) => {
+    console.log();
     this.#handleDataChange(
-      UserAction.ADD_TASK,
+      UserAction.ADD_POINT,
       UpdateType.MINOR,
+      { id: crypto.randomUUID(), ...point }
       // Пока у нас нет сервера, который бы после сохранения
       // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      { id: crypto.randomUUID() }
     );
+
     this.destroy();
   };
 

@@ -9,7 +9,6 @@ const NoPointsTextType = {
 };
 
 export const createNoPointTemplate = (filterType) => {
-  console.log(1);
   const noPointsTextValue = NoPointsTextType[filterType];
   return `<p class="trip-events__msg">${noPointsTextValue}</p>`;
 };
