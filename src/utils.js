@@ -1,10 +1,5 @@
 import dayjs from 'dayjs';
 import { FilterType } from './const';
-export const getRandomArrayElement = (items) =>
-  items[Math.floor(Math.random() * items.length)];
-
-export const getRandomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min) + min);
 
 export function getDuration(startTime, endTime) {
   const days = dayjs(endTime).diff(dayjs(startTime), 'days');
@@ -14,6 +9,10 @@ export function getDuration(startTime, endTime) {
   const formatHours = hours !== 0 ? `${hours}H ` : '';
   const formatMinutes = minutes !== 0 ? `${minutes}M` : '';
   return formatDays + formatHours + formatMinutes;
+}
+
+export function sortPointByDay(pointA, pointB) {
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 export function sortPointsByDuration(pointA, pointB) {
   const pointAMinutes = dayjs(pointA.dateTo).diff(
@@ -61,7 +60,7 @@ export const isEventPresent = (dateFrom, dateTo) =>
 export const isEventPast = (dateTo) => dayjs().diff(dateTo) > 0;
 export const isEventFuture = (dateFrom) => dayjs().diff(dateFrom) < 0;
 
-export const filter = {
+export const filterPoints = {
   [FilterType.EVERYTHING]: (points) => points,
   [FilterType.FUTURE]: (points) =>
     points.filter((point) => isEventFuture(point.dateFrom)),
