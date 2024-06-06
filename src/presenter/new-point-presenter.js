@@ -6,7 +6,6 @@ export default class NewPointPresenter {
   #pointListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
-  #tripInfoContainer = null;
   #pointEditComponent = null;
   #offersList;
   #destinationsList;
@@ -30,10 +29,10 @@ export default class NewPointPresenter {
     }
 
     this.#pointEditComponent = new PointEditView({
-      pointOffers: this.#offersList,
+      pointOffers: this.#offersList.offers,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick,
-      pointDestination: this.#destinationsList,
+      pointDestination: this.#destinationsList.destinations,
     });
 
     render(
@@ -50,25 +49,33 @@ export default class NewPointPresenter {
       return;
     }
 
-    this.#handleDestroy();
-
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
-
+    this.#handleDestroy();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  #handleFormSubmit = (point) => {
-    console.log();
-    this.#handleDataChange(
-      UserAction.ADD_POINT,
-      UpdateType.MINOR,
-      { id: crypto.randomUUID(), ...point }
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-    );
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDeleting: false,
+        isDisabled: false,
+        isSaving: false,
+      });
+    };
 
-    this.destroy();
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  #handleFormSubmit = (point) => {
+    this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, point);
   };
 
   #handleDeleteClick = () => {

@@ -10,20 +10,29 @@ const createEventItems = () =>
 </div>`
   ).join('');
 
-const createEventList = () =>
-  `<input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+const createEventList = (isDisabled) =>
+  `<input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${
+    isDisabled ? 'disabled' : ''
+  }>
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
             ${createEventItems()}
           </fieldset>
         </div>`;
-const createDestinationList = (type, destination, allDestinations) =>
+const createDestinationList = (
+  type,
+  destination,
+  allDestinations,
+  isDisabled
+) =>
   `<div class="event__field-group  event__field-group--destination">
   <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
   </label>
-  <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+  <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1" ${
+    isDisabled ? 'disabled' : ''
+  }>
   <datalist id="destination-list-1">
         ${allDestinations
           .map(
@@ -36,7 +45,8 @@ const createDestinationList = (type, destination, allDestinations) =>
 
 const createOfferList = (
   currentOffers,
-  offersByType
+  offersByType,
+  isDisabled
 ) => `<div class="event__available-offers">
   ${offersByType
     .map(
@@ -47,7 +57,7 @@ const createOfferList = (
         currentOffers.some((currentOffer) => currentOffer === offer.id)
           ? 'checked'
           : ''
-      }>
+      } ${isDisabled ? 'disabled' : ''}>
   <label class="event__offer-label" for="event-offer-${offer.id}">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
@@ -76,13 +86,23 @@ export const createPointEditTemplate = ({
   pointDestination,
   pointOffers,
 }) => {
-  const { basePrice, type, dateFrom, dateTo, destination, offers } = point;
+  const {
+    basePrice,
+    type,
+    dateFrom,
+    dateTo,
+    destination,
+    offers,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  } = point;
 
   const offersOfThisType = pointOffers.find(
     (offer) => offer.type === type
   ).offers;
-
   const pointDest = pointDestination.find((d) => destination === d.id);
+  const isSubmitDisabled = !destination || !dateFrom || !dateTo;
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -92,68 +112,90 @@ export const createPointEditTemplate = ({
           <span class="visually-hidden">Choose event type</span>
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
-      ${createEventList()}
+      ${createEventList(isDisabled)}
       </div>
       ${
         pointDest
-          ? createDestinationList(type, pointDest.name, pointDestination)
-          : createDestinationList(type, '', pointDestination)
+          ? createDestinationList(
+              type,
+              pointDest.name,
+              pointDestination,
+              isDisabled
+            )
+          : createDestinationList(type, '', pointDestination, isDisabled)
       }
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
         <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${
           dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''
-        }">
+        }" ${isDisabled ? 'disabled' : ''}>
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
         <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${
           dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''
-        }">
+        }" ${isDisabled ? 'disabled' : ''}>
       </div>
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${
+    isDisabled ? 'disabled' : ''
+  }>
       </div>
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${
+        isSubmitDisabled || isDisabled ? 'disabled' : ''
+      }>${isSaving ? 'Saving...' : 'Save'}</button>
+      <button class="event__reset-btn" type="reset" ${
+        isDisabled ? 'disabled' : ''
+      }>${isDeleting ? 'Deleting...' : 'Delete'}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
     </header>
-    <section class="event__details">
     ${
-      offersOfThisType.length && pointDest
-        ? `<section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">
-            Offers
-          </h3>
-          ${createOfferList(offers, offersOfThisType)}
-        </section>`
+      typeof pointDest?.description !== 'undefined' &&
+      (offersOfThisType.length ||
+        pointDest.description ||
+        pointDest.pictures.length)
+        ? `<section class="event__details">
+      ${
+        offersOfThisType.length && pointDest
+          ? `
+          <section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">
+              Offers
+            </h3>
+            ${createOfferList(offers, offersOfThisType, isDisabled)}
+          </section>
+          `
+          : ''
+      }
+      ${
+        typeof pointDest?.description !== 'undefined' &&
+        (pointDest.description || pointDest.pictures.length)
+          ? `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">${
+        pointDest.name
+      }</h3>
+      ${
+        pointDest.description
+          ? `<p class="event__destination-description">${pointDest.description}</p>`
+          : ''
+      }
+      ${
+        pointDest.pictures.length !== 0
+          ? createPicturesSection(pointDest?.pictures)
+          : ''
+      }
+    </section>`
+          : ''
+      }
+      </section>`
         : ''
     }
-    ${
-      pointDest.description || pointDest.pictures.length !== 0
-        ? `<section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">${
-      pointDest.name
-    }</h3>
-    ${
-      pointDest.description
-        ? `<p class="event__destination-description">${pointDest.description}</p>`
-        : ''
-    }
-    ${
-      pointDest.pictures.length !== 0
-        ? createPicturesSection(pointDest.pictures)
-        : ''
-    }
-  </section>`
-        : ''
-    }
-    </section>
+
   </form>
 </li>`;
 };
