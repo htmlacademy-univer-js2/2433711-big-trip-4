@@ -154,7 +154,7 @@ export default class TripPresenter {
     }
     render(this.#eventListComponent, this.#container);
     const points = this.points;
-    if (this.points.length === 0) {
+    if (!this.points.length) {
       this.#renderNoPoints();
       return;
     }
