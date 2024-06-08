@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FilterType } from './const';
+import { FilterType } from '../const';
 
 export function getDuration(startTime, endTime) {
   const days = dayjs(endTime).diff(dayjs(startTime), 'days');
