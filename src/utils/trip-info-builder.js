@@ -9,7 +9,7 @@ export function buildTripInfo({ points, destinations, offers }) {
   if (points.length === 0) {
     return tripInfoData;
   }
-  const sortedPoints = [...points.sort(sortPointByDay)];
+  const sortedPoints = [...points.sort(sortPointsByDay)];
   const pathDestinations = [];
   points.forEach((point) => {
     tripInfoData.price += point.basePrice;
