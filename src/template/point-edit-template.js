@@ -157,7 +157,7 @@ export const createPointEditTemplate = ({
       </button>
     </header>
     ${
-      typeof pointDest?.description !== 'undefined' &&
+      pointDest &&
       (offersOfThisType.length ||
         pointDest.description ||
         pointDest.pictures.length)
@@ -175,7 +175,7 @@ export const createPointEditTemplate = ({
           : ''
       }
       ${
-        typeof pointDest?.description !== 'undefined' &&
+        pointDest?.description &&
         (pointDest.description || pointDest.pictures.length)
           ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">${
@@ -187,7 +187,7 @@ export const createPointEditTemplate = ({
           : ''
       }
       ${
-        pointDest.pictures.length !== 0
+        pointDest.pictures.length
           ? createPicturesSection(pointDest?.pictures)
           : ''
       }

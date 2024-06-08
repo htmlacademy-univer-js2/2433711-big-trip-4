@@ -6,7 +6,7 @@ export function buildTripInfo({ points, destinations, offers }) {
     tripDate: '',
     tripPath: '',
   };
-  if (points.length === 0) {
+  if (!points.length) {
     return tripInfoData;
   }
   const sortedPoints = [...points.sort(sortPointsByDay)];
