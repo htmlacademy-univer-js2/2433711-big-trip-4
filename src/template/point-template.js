@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import dayjs from 'dayjs';
-import { getDuration } from '../utils';
+import { getDuration } from '../utils/utils';
 
 const createOffersList = (offers) =>
   offers
