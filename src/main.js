@@ -1,5 +1,5 @@
 import TripInfoPresenter from './presenter/trip-info-presenter.js';
-import BoardPresenter from './presenter/trip-presenter.js';
+import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points-model.js';
 import DestinationsModel from './model/destinations-model.js';
@@ -29,8 +29,12 @@ const pointsModel = new PointsModel({
   pointsApiService: new PointsApiService(END_POINT, AUTHORIZATION),
 });
 const filterModel = new FilterModel();
-const boardPresenter = new BoardPresenter({
+const newPointButtonComponent = new NewPointButtonView({
+  onClick: handleNewPointButtonClick,
+});
+const boardPresenter = new TripPresenter({
   container: boardContainer,
+  newPointButtonComponent: newPointButtonComponent,
   pointsModel,
   offersModel,
   destinationsModel,
@@ -48,9 +52,7 @@ const tripInfoPresenter = new TripInfoPresenter({
   destinations: destinationsModel,
   offers: offersModel,
 });
-const newPointButtonComponent = new NewPointButtonView({
-  onClick: handleNewPointButtonClick,
-});
+
 function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }

@@ -30,17 +30,20 @@ const createDestinationList = (
   <label class="event__label  event__type-output" for="event-destination-1">
     ${type}
   </label>
-  <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1" ${
+  <select class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" list="destination-list-1" ${
     isDisabled ? 'disabled' : ''
   }>
-  <datalist id="destination-list-1">
+        <option  hidden></option>
         ${allDestinations
           .map(
             (city) =>
-              `<option value="${city.name}" data-id="${city.id}"></option>`
+              `<option value="${city.name}" ${
+                city.name === destination ? 'selected' : ''
+              }>${city.name}</option>`
           )
           .join('')}
-  </datalist>
+
+      </select>
   </div>`;
 
 const createOfferList = (
@@ -102,8 +105,7 @@ export const createPointEditTemplate = ({
     (offer) => offer.type === type
   ).offers;
   const pointDest = pointDestination.find((d) => destination === d.id);
-  const isSubmitDisabled = !destination || !dateFrom || !dateTo;
-
+  const isSubmitDisabled = !destination || !dateFrom || !dateTo || !basePrice;
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -140,7 +142,7 @@ export const createPointEditTemplate = ({
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${
     isDisabled ? 'disabled' : ''
   }>
       </div>

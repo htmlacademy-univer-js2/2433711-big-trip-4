@@ -1,7 +1,10 @@
-export default class DestinationsModel {
+import Observable from '../framework/observable';
+import { UpdateType } from '../const';
+export default class DestinationsModel extends Observable {
   #destinations = [];
   #destinationsApiService;
   constructor({ destinationsApiService }) {
+    super();
     this.#destinationsApiService = destinationsApiService;
   }
 
@@ -15,6 +18,7 @@ export default class DestinationsModel {
       this.#destinations = destinations;
     } catch (err) {
       this.#destinations = [];
+      this._notify(UpdateType.INIT, { isServerAvailable: false });
     }
   }
 }

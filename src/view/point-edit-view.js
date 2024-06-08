@@ -131,9 +131,10 @@ export default class PointEditView extends AbstractStatefulView {
   };
 
   #priceChangeHandler = (evt) => {
-    this._setState({
+    this.updateElement({
       basePrice: parseInt(evt.target.value, 10),
     });
+    console.log(this._state);
   };
 
   #offersChangeHandler = () => {
@@ -161,6 +162,7 @@ export default class PointEditView extends AbstractStatefulView {
   };
 
   #destinationChangeHandler = (evt) => {
+    console.log(evt.target.value);
     this.updateElement({
       destination: this.#pointDestinations.find(
         (destination) => destination.name === evt.target.value
