@@ -1,15 +1,15 @@
-import TripInfoView from './view/trip-info-view';
+import TripInfoPresenter from './presenter/trip-info-presenter.js';
 import BoardPresenter from './presenter/trip-presenter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
-import { render, RenderPosition } from './framework/render.js';
 import FilterModel from './model/filter-model.js';
-import FilterPresenter from './presenter/filter-presenter.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import PointsApiService from './api/points-api-service.js';
 import OffersApiService from './api/offers-api-service.js';
 import DestinationsApiService from './api/destinations-api-service.js';
+import { render } from './framework/render.js';
 
 export const filterContainer = document.querySelector(
   '.trip-controls__filters'
@@ -42,7 +42,12 @@ const filterPresenter = new FilterPresenter({
   filterModel,
   pointsModel,
 });
-
+const tripInfoPresenter = new TripInfoPresenter({
+  container: tripInfoContainer,
+  points: pointsModel,
+  destinations: destinationsModel,
+  offers: offersModel,
+});
 const newPointButtonComponent = new NewPointButtonView({
   onClick: handleNewPointButtonClick,
 });
@@ -65,5 +70,5 @@ async function initModels() {
 }
 boardPresenter.init();
 filterPresenter.init();
-render(new TripInfoView(), tripInfoContainer, RenderPosition.AFTERBEGIN);
+tripInfoPresenter.init();
 initModels();

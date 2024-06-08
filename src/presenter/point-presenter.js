@@ -2,7 +2,7 @@ import { render, replace, remove } from '../framework/render.js';
 import PointEditView from '../view/point-edit-view.js';
 import PointView from '../view/point-view.js';
 import { UserAction, UpdateType } from '../const.js';
-import { isDatesEqual, isDurationEqual, isPriceEqual } from '../utils.js';
+import { isDatesEqual, isDurationEqual, isPriceEqual } from '../utils/utils.js';
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',

@@ -1,8 +1,14 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
 import { FilterType, UpdateType } from '../const.js';
-import { filterPoints } from '../utils.js';
+import { filterPoints } from '../utils/utils.js';
 
+const isFilterDisabled = {
+  [FilterType.EVERYTHING]: false,
+  [FilterType.FUTURE]: false,
+  [FilterType.PRESENT]: false,
+  [FilterType.PAST]: false,
+};
 export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
@@ -30,9 +36,13 @@ export default class FilterPresenter {
 
   init() {
     const filters = this.filters;
+    filters.forEach(
+      (filter) => (isFilterDisabled[filter.type] = filter.count === 0)
+    );
     const prevFilterComponent = this.#filterComponent;
     this.#filterComponent = new FilterView({
-      filters,
+      isFilterDisabled: isFilterDisabled,
+      filters: filters,
       currentFilter: this.#filterModel.filter,
       onFilterTypeChange: this.#handleFilterTypeChange,
     });

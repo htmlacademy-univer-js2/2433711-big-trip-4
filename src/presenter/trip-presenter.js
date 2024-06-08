@@ -9,7 +9,7 @@ import {
   sortPointsByPrice,
   filterPoints,
   sortPointByDay,
-} from '../utils.js';
+} from '../utils/utils.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
