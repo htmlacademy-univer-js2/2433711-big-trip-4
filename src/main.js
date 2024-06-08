@@ -11,14 +11,14 @@ import OffersApiService from './api/offers-api-service.js';
 import DestinationsApiService from './api/destinations-api-service.js';
 import { render } from './framework/render.js';
 
+const AUTHORIZATION = 'Basic e2c3a4d8e7dfg5df4FDG564Dgfd546g';
+const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
+
 export const filterContainer = document.querySelector(
   '.trip-controls__filters'
 );
 const tripInfoContainer = document.querySelector('.trip-main');
 const boardContainer = document.querySelector('.trip-events');
-
-const AUTHORIZATION = 'Basic e2c3a4d8e7dfg5df4FDG564Dgfd546g';
-const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
 const destinationsModel = new DestinationsModel({
   destinationsApiService: new DestinationsApiService(END_POINT, AUTHORIZATION),
 });
@@ -51,19 +51,15 @@ const tripInfoPresenter = new TripInfoPresenter({
 const newPointButtonComponent = new NewPointButtonView({
   onClick: handleNewPointButtonClick,
 });
-
 function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }
-
 function handleNewPointButtonClick() {
   boardPresenter.createPoint();
   newPointButtonComponent.element.disabled = true;
 }
-
 async function initModels() {
   await destinationsModel.init();
-
   await offersModel.init();
   await pointsModel.init();
   render(newPointButtonComponent, tripInfoContainer);
